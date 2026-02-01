@@ -7,4 +7,6 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('shivansh/', views.shivansh, name='shivansh'),
+    # dynamic url pattern
+    path('greet/<str:name>/', views.greet, name='greet'),
 ]

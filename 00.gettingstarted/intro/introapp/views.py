@@ -13,3 +13,8 @@ def contact(request):
 
 def shivansh(request):
     return HttpResponse("Hello Shivansh! Welcome to the Intro App.")
+
+
+# dynamic views
+def greet(request,name):
+    return HttpResponse(f"Hello, {name.capitalize()}! Welcome to the Intro App!")
