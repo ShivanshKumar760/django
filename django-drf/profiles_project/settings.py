@@ -118,6 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+AUTH_USER_MODEL = 'profiles_api.UserPorfile' #this is used to tell django that we are using a custom user model instead of the default user model that django provides. so we need to specify the path to our custom user model in this setting. in this case, our custom user model is located in the profiles_api app and the name of the model is UserPorfile, so we set AUTH_USER_MODEL to 'profiles_api.UserPorfile'. this will tell django to use our custom user model instead of the default user model when we run the migrations and when we create a new user.
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
