@@ -1,7 +1,30 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser , PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser , PermissionsMixin , BaseUserManager
 
 # Create your models here.
+class UserProfileManager(models.Manager):
+    def create_user(self , email , name , password=None):
+        if not email:
+            raise ValueError("Users must have an email address")
+        email = self.normalize_email(email)#normalize means to convert the email to lowercase. this is because email addresses are case insensitive. so if we have two email addresses that are the same but one is in uppercase and the other is in lowercase, then we want to treat them as the same email address. so we will convert the email address to lowercase before we save it to the database.
+        user = self.model(email=email , name=name)#self.model what does this model do ?
+        # self.model is a reference to the model that this manager is for. in this case, it is a reference to the UserProfile model. so when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model with the email and name that we passed in. and then we will set the password for the user and save the user to the database.
+        # how does it know which model to call when we call self.model? it knows because when we define the UserProfile model, we set the objects attribute to be an instance of the UserProfileManager. so when we call UserProfile.objects.create_user(email, name, password), it will call the create_user method of the UserProfileManager, and inside that method, when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model because self.model is a reference to the UserProfile model.
+        # but create_user is not present in the UserProfile model, it is present in the UserProfileManager. so when we call UserProfile.objects.create_user(email, name, password), it will call the create_user method of the UserProfileManager, and inside that method, when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model because self.model is a reference to the UserProfile model.
+        # how does from UserProfile , create_user method is called ? it is called because we set the objects attribute of the UserProfile model to be an instance of the UserProfileManager. so when we call UserProfile.objects.create_user(email, name, password), it will call the create_user method of the UserProfileManager, and inside that method, when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model because self.model is a reference to the UserProfile model.
+        # Now how did that self.model knew about the UserProfile cause we dint pass it ? it is because when we define the UserProfile model, we set the objects attribute to be an instance of the UserProfileManager. so when we call UserProfile.objects.create_user(email, name, password), it will call the create_user method of the UserProfileManager, and inside that method, when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model because self.model is a reference to the UserProfile model.
+        # but that self is inside the UserProfileManger so that self should call UserProfileManger and in that class we have no
+        # attribute so if we set the object attribute in the UserProfile how does that link to UserProfileManger? it is because when we define the UserProfile model, we set the objects attribute to be an instance of the UserProfileManager. so when we call UserProfile.objects.create_user(email, name, password), it will call the create_user method of the UserProfileManager, and inside that method, when we call self.model(email=email , name=name), it will create a new instance of the UserProfile model because self.model is a reference to the UserProfile model.
+        user.set_password(password)#this method is provided by the AbstractBaseUser class. it is used to set the password for the user. it takes the password as an argument and it will hash the password and save it to the database. so we don't have to worry about hashing the password ourselves. we just need to call this method and pass in the password that we want to set for the user.
+        user.save(using=self._db)#self._db is used to specify which database to use when saving the user. this is useful if we have multiple databases in our project. if we don't specify which database to use, then it will use the default database. so by using self._db, we can ensure that the user is saved to the correct database.
+        #how does this work internally ? when we call user.save(using=self._db), it will call the save method of the UserProfile model, and inside that method, it will check if the user already exists in the database. if it does, then it will update the existing user. if it doesn't, then it will create a new user. and then it will save the user to the database.
+        return user
+    def create_superuser(self , email , name , password):
+        user= self.create_user(email , name , password)
+        user.is_superuser = True #this field is provided by the PermissionsMixin class. it is used to determine if the user is a superuser or not. it is used to determine if the user has all permissions or not. if the user is a superuser, then they have all permissions. if the user is not a superuser, then they have only the permissions that are assigned to them.
+        user.is_staff = True #this field is provided by the PermissionsMixin class. it is used to determine if the user is a staff member or not. it is used to determine if the user has access to the django admin site or not. if the user is a staff member, then they have access to the django admin site. if the user is not a staff member, then they don't have access to the django admin site.
+        user.save(using=self._db)
+        return user
 
 class UserPorfile(AbstractBaseUser , PermissionsMixin):
     email = models.EmailField(max_length=255 , unique=True)
