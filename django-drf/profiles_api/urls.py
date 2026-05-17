@@ -2,8 +2,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from profiles_api import APIView ,VIEWSet
+from profiles_api import views
 router = DefaultRouter()
 router.register('hello-viewset',VIEWSet.HelloViewSet,basename='hello-viewset')
+router.register('profile',views.UserProfileViewset)
 
 
 urlpatterns = [
@@ -20,5 +22,6 @@ urlpatterns = [
     # path("hello-viewset/", VIEWSet.HelloViewSet.as_view({'get':'list','delete':'destroy'})),#this is the url for our viewset. we will create a new file called viewset.py in our profiles_api app and we will define the viewset in that file. and then we will include that url in our main urls.py file.
 
     #so instead of writing all the urls for the viewset like this, we can use the router to automatically generate the urls for us. we just need to register the viewset with the router and then include the router urls in our main urls.py file. so we will do that like this:
+    path('/login',views.UserLoginApiView.as_view())
     path('',include(router.urls))
 ]
