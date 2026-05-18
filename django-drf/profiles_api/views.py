@@ -11,6 +11,7 @@ from rest_framework import filters
 from profiles_api import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 class UserProfileViewset(viewsets.ModelViewSet):
     serializer_class=serializer.UserProfileSerializers
     queryset=models.UserPorfile.objects.all()
@@ -28,7 +29,17 @@ class ProfileFeedItemViewSet(viewsets.ModelViewSet):
     authentication_classes=(TokenAuthentication,)
     serializer_class=serializer.ProfileFeedItemSerializer
     queryset=models.ProfileFeedItem.objects.all()
-    permission_classes=(permissions.UpdateOwnStatus,)
+    # permission_classes=(
+    #     permissions.UpdateOwnStatus,
+    #     IsAuthenticatedOrReadOnly,# this permission will 
+    #     #allow any user to read the feed items but 
+    #     # only authenticated users can create, update or 
+    #     # delete the feed items.   
+    # )
+    permissions_classes=(
+        permissions.UpdateOwnStatus,
+        IsAuthenticated # this permission will allow only authenticated users to read, create, update or delete the feed items.
+    )
 
 #override the perform_create() method to set the user profile to the logged in user when creating a new feed item.
 #a default perform_create() method is provided by the ModelViewSet class, 
