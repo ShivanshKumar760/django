@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser , PermissionsMixin , BaseUserManager
-
+from django.conf import settings
 # Create your models here.
 class UserProfileManager(BaseUserManager):
     def create_user(self , email , name , password=None):
@@ -58,3 +58,28 @@ class UserPorfile(AbstractBaseUser , PermissionsMixin):
         # person = Person("John")
         # print(person) # Output: John
         return self.email
+
+
+class ProfileFeedItem(models.Model):
+    #this is a reference to the user profile model. 
+    #we use settings.AUTH_USER_MODEL instead of directly referencing the UserProfile model because it is a best practice to use settings.AUTH_USER_MODEL when referencing the user model in django. 
+    # this is because if we ever want to change the user model in the future, 
+    # we can do that easily by changing the value of AUTH_USER_MODEL in the settings.py 
+    # file. if we directly reference the UserProfile model, 
+    # then we would have to change all the references to that model in our 
+    # code if we ever want to change the user model in the future. 
+    # so by using settings.AUTH_USER_MODEL, we can avoid that problem and make 
+    # our code more flexible and maintainable.
+    '''this is because if we ever want to change the user model in the future, 
+     we can do that easily by changing the value of AUTH_USER_MODEL in the settings.py ->Explain this line 
+     in simple terms with example:
+     '''
+    user_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,#how will this know which coloumn in the AUTH_USER_MODEL to use as fk : it will use the primary key of the AUTH_USER_MODEL as the foreign key. so in this case, it will use the id field of the UserProfile model as the foreign key. and when we create a new ProfileFeedItem, we will pass in the user_profile as an instance of the UserProfile model, and it will automatically set the user_profile_id field in the ProfileFeedItem model to the id of the UserProfile instance that we passed in.
+        on_delete=models.CASCADE
+    )
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.status_text
